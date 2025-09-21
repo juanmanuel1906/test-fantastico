@@ -1,13 +1,385 @@
-<!doctype html>
-<html lang="en">
+<!DOCTYPE html>
+<html lang="es">
 <head>
-  <meta charset="utf-8">
-  <title>TestFantastico</title>
-  <base href="/">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Plataforma Juvenil Armenia - ¡Muy Pronto!</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background-color: #f0f4f8;
+        }
+        h1, h2, h3 {
+            font-family: 'Inter', sans-serif;
+        }
+        .brand-gradient {
+            background: linear-gradient(135deg, #10B981, #F59E0B);
+        }
+        .card {
+            background-color: white;
+            border-radius: 1.5rem;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            transition: all 0.3s ease;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #10B981, #059669);
+            color: white;
+            font-weight: 700;
+            padding: 0.75rem 1.5rem;
+            border-radius: 9999px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            transition: all 0.3s ease;
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(16, 185, 129, 0.4), 0 4px 6px -2px rgba(16, 185, 129, 0.2);
+        }
+        .question-option {
+            border: 2px solid #e5e7eb;
+            transition: all 0.2s ease-in-out;
+        }
+        .question-option.selected {
+            border-color: #10B981;
+            background-color: #D1FAE5;
+            transform: scale(1.02);
+        }
+        .fade-in {
+            animation: fadeIn 0.5s ease-in-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .fantastico-letter {
+            color: #d1d5db; /* gray-300 */
+            transition: all 0.4s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+            display: inline-block;
+        }
+        .fantastico-letter.active {
+            color: transparent;
+            background: linear-gradient(135deg, #10B981, #F59E0B);
+            -webkit-background-clip: text;
+            background-clip: text;
+            transform: scale(1.25);
+        }
+    </style>
 </head>
-<body>
-  <app-root></app-root>
+<body class="text-gray-800">
+
+    <div class="container mx-auto p-4 md:p-8 max-w-4xl">
+
+        <!-- Header -->
+        <header class="text-center mb-8 md:mb-12">
+            <h1 class="text-4xl md:text-5xl font-black text-gray-900 leading-tight">
+                Algo <span class="brand-gradient text-transparent bg-clip-text">FANTÁSTICO</span> está por llegar a Armenia.
+            </h1>
+            <p class="mt-4 text-lg text-gray-600 max-w-2xl mx-auto">Una nueva plataforma para los jóvenes de nuestra ciudad. Pero antes de lanzarla, ¡queremos escucharte!</p>
+        </header>
+
+        <main id="app-container">
+
+            <!-- Start Screen -->
+            <section id="start-screen" class="card p-8 md:p-12 text-center fade-in">
+                <div class="flex justify-center items-center mb-6">
+                    <i data-lucide="sparkles" class="w-16 h-16 text-yellow-500"></i>
+                </div>
+                <h2 class="text-2xl font-bold mb-2">¿Tienes un Estilo de Vida Fantástico?</h2>
+                <p class="text-gray-600 mb-8">Responde este test clásico sobre bienestar y al final, ayúdanos a construir la plataforma juvenil que sueñas para Armenia.</p>
+                <button id="start-btn" class="btn-primary">Comenzar</button>
+            </section>
+
+            <!-- Quiz Screen -->
+            <section id="quiz-screen" class="card p-8 md:p-12 hidden fade-in">
+                <div id="fantastico-header" class="text-center mb-4">
+                    <h2 class="text-4xl md:text-5xl font-black tracking-widest">
+                        <span class="fantastico-letter">F</span><span class="fantastico-letter">A</span><span class="fantastico-letter">N</span><span class="fantastico-letter">T</span><span class="fantastico-letter">Á</span><span class="fantastico-letter">S</span><span class="fantastico-letter">T</span><span class="fantastico-letter">I</span><span class="fantastico-letter">C</span><span class="fantastico-letter">O</span>
+                    </h2>
+                </div>
+                <div id="quiz-header" class="mb-6 text-center">
+                    <p id="question-category" class="text-2xl font-bold uppercase tracking-wide mb-2 brand-gradient text-transparent bg-clip-text"></p>
+                    <h3 id="question-text" class="text-xl md:text-2xl font-bold mt-2 text-gray-900"></h3>
+                </div>
+                <div id="options-container" class="space-y-4">
+                    <!-- Options will be injected here -->
+                </div>
+                <div class="mt-8 text-center">
+                    <span id="question-counter" class="text-sm text-gray-500 font-medium"></span>
+                </div>
+            </section>
+            
+            <!-- Results Screen -->
+            <section id="results-screen" class="card p-8 md:p-12 hidden fade-in text-center">
+                 <div id="result-content">
+                    <!-- Result content will be injected here -->
+                </div>
+                <div class="mt-8 pt-8 border-t-2 border-gray-100">
+                     <button id="feedback-btn" class="btn-primary">¡Quiero dar mi opinión!</button>
+                </div>
+            </section>
+
+
+            <!-- Feedback Screen -->
+            <section id="feedback-screen" class="card p-8 md:p-12 hidden fade-in">
+                <div class="text-center mb-8">
+                    <i data-lucide="message-square-heart" class="w-16 h-16 text-green-500 mx-auto"></i>
+                    <h2 class="text-3xl font-bold mt-4">¡Tu opinión es clave!</h2>
+                    <p class="text-gray-600 mt-2">Ayúdanos a dar forma a este nuevo espacio. Responde con lo primero que se te venga a la mente.</p>
+                </div>
+                <form id="feedback-form" class="space-y-6">
+                    <div>
+                        <label for="q1" class="block font-semibold mb-2">Cuando te hablan de una plataforma juvenil para Armenia, ¿en qué piensas?</label>
+                        <input type="text" id="q1" name="q1" class="w-full p-3 rounded-xl border-2 border-gray-200 focus:border-green-500 focus:ring-0 transition" placeholder="Ej: Eventos, empleos, arte, amigos...">
+                    </div>
+                    <div>
+                        <label for="q2" class="block font-semibold mb-2">¿Qué herramienta o sección no podría faltar en este nuevo espacio digital?</label>
+                        <input type="text" id="q2" name="q2" class="w-full p-3 rounded-xl border-2 border-gray-200 focus:border-green-500 focus:ring-0 transition" placeholder="Ej: Un mapa de parches, un calendario cultural...">
+                    </div>
+                    <div>
+                        <label for="q3" class="block font-semibold mb-2">Si pudieras pedir un deseo para la juventud de Armenia, ¿cuál sería?</label>
+                        <textarea id="q3" name="q3" rows="3" class="w-full p-3 rounded-xl border-2 border-gray-200 focus:border-green-500 focus:ring-0 transition" placeholder="Ej: Más oportunidades para mostrar nuestro talento..."></textarea>
+                    </div>
+                    <div class="text-center pt-4">
+                        <button type="submit" id="submit-feedback-btn" class="btn-primary">Enviar y finalizar</button>
+                    </div>
+                </form>
+                 <p id="feedback-message" class="text-center mt-4 text-green-600 font-semibold hidden">¡Gracias por tus ideas!</p>
+            </section>
+            
+            <!-- Final Screen -->
+            <section id="final-screen" class="card p-8 md:p-12 hidden fade-in text-center">
+                <i data-lucide="rocket" class="w-20 h-20 text-green-500 mx-auto"></i>
+                <h3 class="text-2xl font-bold mt-4">¡La espera casi termina!</h3>
+                <p class="text-gray-600 mt-2 max-w-lg mx-auto">La nueva <span class="font-bold text-green-600">Plataforma Juvenil de Armenia</span> está a punto de ser una realidad. Un espacio creado para ti, por ti, para tus ideas y para tu futuro.</p>
+                <p class="mt-4 max-w-lg  font-black brand-gradient text-transparent bg-clip-text">#JóvenesArmenia</p>
+            </section>
+
+        </main>
+        
+        <footer class="text-center mt-12">
+            <p class="text-gray-500 text-sm">Test adaptado del instrumento 'Estilo de Vida Fantástico', una contribución de la Universidad de Chile.</p>
+        </footer>
+
+    </div>
+
+    <script>
+        lucide.createIcons();
+
+        const quizData = [
+            { question: "Tengo con quien hablar de las cosas que son importantes para mi:", options: [{ text: "Casi siempre", points: 2 }, { text: "A veces", points: 1 }, { text: "Casi nunca", points: 0 }] },
+            { question: "Yo doy y recibo cariño:", options: [{ text: "Casi siempre", points: 2 }, { text: "A veces", points: 1 }, { text: "Casi nunca", points: 0 }] },
+            { question: "Soy integrante activo(a) de un grupo de apoyo (club deportivo, cultural, social, etc).", options: [{ text: "Casi siempre", points: 2 }, { text: "A veces", points: 1 }, { text: "Casi nunca", points: 0 }] },
+            { question: "Realizo actividad física (caminar, correr, etc.) o deporte durante 30 min. cada vez:", options: [{ text: "3 o más veces por semana", points: 2 }, { text: "1 o 2 veces por semana", points: 1 }, { text: "No hago nada", points: 0 }] },
+            { question: "Camino al menos 30 minutos diariamente.", options: [{ text: "Casi siempre", points: 2 }, { text: "A veces", points: 1 }, { text: "Casi nunca", points: 0 }] },
+            { question: "Como 2 porciones de verduras y 3 frutas:", options: [{ text: "Todos los días", points: 2 }, { text: "A veces", points: 1 }, { text: "Casi nunca", points: 0 }] },
+            { question: "A menudo consumo mucho azúcar, sal, comida chatarra o con mucha grasa:", options: [{ text: "Nunca o casi nunca", points: 2 }, { text: "Algunas veces", points: 1 }, { text: "Siempre o casi siempre", points: 0 }] },
+            { question: "Mi peso ideal está pasado en:", options: [{ text: "0 a 4 kilos", points: 2 }, { text: "5 a 8 kilos", points: 1 }, { text: "Más de 8 kilos", points: 0 }] },
+            { question: "Yo fumo cigarrillos:", options: [{ text: "No, ni en el último año", points: 2 }, { text: "Dejé en el último año", points: 1 }, { text: "Sí, fumo actualmente", points: 0 }] },
+            { question: "Generalmente, ¿cuántos cigarrillos fumas por día?:", options: [{ text: "Ninguno", points: 2 }, { text: "Menos de 10", points: 1 }, { text: "Más de 10", points: 0 }] },
+            { question: "¿Cuántos tragos (cerveza, vino, licor) tomas por semana?:", options: [{ text: "0 a 7 tragos", points: 2 }, { text: "8 a 12 tragos", points: 1 }, { text: "Más de 12 tragos", points: 0 }] },
+            { question: "Uso drogas como marihuana, cocaína, etc.:", options: [{ text: "Nunca", points: 2 }, { text: "Ocasionalmente", points: 1 }, { text: "A menudo", points: 0 }] },
+            { question: "Abuso de los remedios, indicados o sin receta:", options: [{ text: "Nunca", points: 2 }, { text: "Casi nunca", points: 1 }, { text: "A menudo", points: 0 }] },
+            { question: "Bebo más de cuatro tragos en una misma ocasión:", options: [{ text: "Nunca", points: 2 }, { text: "Casi nunca", points: 1 }, { text: "A menudo", points: 0 }] },
+            { question: "Manejo después de beber alcohol:", options: [{ text: "Nunca", points: 2 }, { text: "Rara vez", points: 1 }, { text: "A menudo", points: 0 }] },
+            { question: "Bebo café, té o bebidas con cafeína:", options: [{ text: "Menos de 3 al día", points: 2 }, { text: "De 3 a 6 al día", points: 1 }, { text: "Más de 6 al día", points: 0 }] },
+            { question: "Duermo bien y me siento descansado/a:", options: [{ text: "Casi siempre", points: 2 }, { text: "A veces", points: 1 }, { text: "Casi nunca", points: 0 }] },
+            { question: "Me siento capaz de manejar el estrés o la tensión de mi vida:", options: [{ text: "Casi siempre", points: 2 }, { text: "A veces", points: 1 }, { text: "Casi nunca", points: 0 }] },
+            { question: "Me siento tenso/a o 'apretado/a':", options: [{ text: "Casi nunca", points: 2 }, { text: "Algunas veces", points: 1 }, { text: "A menudo", points: 0 }] },
+            { question: "Me relajo y disfruto mi tiempo libre:", options: [{ text: "Casi siempre", points: 2 }, { text: "A veces", points: 1 }, { text: "Casi nunca", points: 0 }] },
+            { question: "Parece que ando muy acelerado/a:", options: [{ text: "Casi nunca", points: 2 }, { text: "Algunas veces", points: 1 }, { text: "A menudo", points: 0 }] },
+            { question: "Me siento enojado/a o agresivo/a:", options: [{ text: "Casi nunca", points: 2 }, { text: "Algunas veces", points: 1 }, { text: "A menudo", points: 0 }] },
+            { question: "Soy una persona positiva u optimista:", options: [{ text: "Casi siempre", points: 2 }, { text: "A veces", points: 1 }, { text: "Casi nunca", points: 0 }] },
+            { question: "Me siento contento/a con mi trabajo o mis actividades:", options: [{ text: "Casi siempre", points: 2 }, { text: "A veces", points: 1 }, { text: "Casi nunca", points: 0 }] },
+            { question: "Me siento deprimido/a o triste:", options: [{ text: "Casi nunca", points: 2 }, { text: "Algunas veces", points: 1 }, { text: "A menudo", points: 0 }] },
+            { question: "Me realizo controles de salud periódicos:", options: [{ text: "Casi siempre", points: 2 }, { text: "A veces", points: 1 }, { text: "Casi nunca", points: 0 }] },
+            { question: "Converso con mi pareja o mi familia temas de sexualidad:", options: [{ text: "Siempre", points: 2 }, { text: "A veces", points: 1 }, { text: "Casi nunca", points: 0 }] },
+            { question: "En mi conducta sexual me preocupo del autocuidado y del cuidado de mi pareja:", options: [{ text: "Casi siempre", points: 2 }, { text: "A veces", points: 1 }, { text: "Casi nunca", points: 0 }] },
+            { question: "Como peatón o conductor, soy respetuoso(a) de las normas del tránsito:", options: [{ text: "Siempre", points: 2 }, { text: "A veces", points: 1 }, { text: "Casi nunca", points: 0 }] },
+            { question: "Uso cinturón de seguridad al ir en un vehículo:", options: [{ text: "Siempre", points: 2 }, { text: "A veces", points: 1 }, { text: "Casi nunca", points: 0 }] }
+        ];
+
+        const categoryMap = [
+            { letterIndex: 0, name: "FAMILIA Y AMIGOS" }, { letterIndex: 0, name: "FAMILIA Y AMIGOS" },
+            { letterIndex: 1, name: "ASOCIATIVIDAD Y ACTIVIDAD FÍSICA" }, { letterIndex: 1, name: "ASOCIATIVIDAD Y ACTIVIDAD FÍSICA" }, { letterIndex: 1, name: "ASOCIATIVIDAD Y ACTIVIDAD FÍSICA" },
+            { letterIndex: 2, name: "NUTRICIÓN" }, { letterIndex: 2, name: "NUTRICIÓN" }, { letterIndex: 2, name: "NUTRICIÓN" },
+            { letterIndex: 3, name: "TABACO" }, { letterIndex: 3, name: "TABACO" },
+            { letterIndex: 4, name: "ALCOHOL Y DROGAS" }, { letterIndex: 4, name: "ALCOHOL Y DROGAS" }, { letterIndex: 4, name: "ALCOHOL Y DROGAS" }, { letterIndex: 4, name: "ALCOHOL Y DROGAS" }, { letterIndex: 4, name: "ALCOHOL Y DROGAS" }, { letterIndex: 4, name: "ALCOHOL Y DROGAS" },
+            { letterIndex: 5, name: "SUEÑO Y ESTRÉS" }, { letterIndex: 5, name: "SUEÑO Y ESTRÉS" }, { letterIndex: 5, name: "SUEÑO Y ESTRÉS" }, { letterIndex: 5, name: "SUEÑO Y ESTRÉS" },
+            { letterIndex: 6, name: "TIPO DE PERSONALIDAD" }, { letterIndex: 6, name: "TIPO DE PERSONALIDAD" },
+            { letterIndex: 7, name: "INTROSPECCIÓN" }, { letterIndex: 7, name: "INTROSPECCIÓN" }, { letterIndex: 7, name: "INTROSPECCIÓN" },
+            { letterIndex: 8, name: "CONTROL Y CONDUCTA" }, { letterIndex: 8, name: "CONTROL Y CONDUCTA" }, { letterIndex: 8, name: "CONTROL Y CONDUCTA" },
+            { letterIndex: 9, name: "OTRAS CONDUCTAS" }, { letterIndex: 9, name: "OTRAS CONDUCTAS" }
+        ];
+        
+        const recommendations = [
+            { title: "Familia y Amigos", icon: 'heart', html: "<b>Comunícate.</b> Comparte tus sentimientos con los demás. Abraza a alguien que tú quieras todos los días." },
+            { title: "Actividad Física", icon: 'activity', html: "<b>Intégrate y haz ejercicio.</b> Participa en grupos y realiza al menos 30 minutos de actividad física al día. ¡Baila, camina, trota, muévete!" },
+            { title: "Nutrición", icon: 'smile', html: "<b>Come bien.</b> Incluye frutas y verduras en tus comidas. Evita la sal, el azúcar, la comida chatarra y reduce las grasas." },
+            { title: "Tabaco", icon: 'wind', html: "<b>Vive libre de humo.</b> Deja de fumar, o mejor aún, no comiences. Busca ayuda y prefiere siempre ambientes sin tabaco." },
+            { title: "Alcohol y Drogas", icon: 'alert-triangle', html: "<b>Consume con responsabilidad.</b> Si vas a beber, no te embriagues y nunca conduzcas después de hacerlo. Evita las drogas." },
+            { title: "Sueño y Estrés", icon: 'moon', html: "<b>Descansa y relájate.</b> Trata de dormir de 7 a 9 horas cada noche. Libérate del estrés con técnicas de respiración y ejercicio." },
+            { title: "Tipo de Personalidad", icon: 'coffee', html: "<b>Tranquilízate.</b> Busca maneras de relajarte, conversa con otras personas y disfruta de la vida con calma." },
+            { title: "Introspección", icon: 'sun', html: "<b>Piensa en positivo.</b> Aleja la depresión manteniéndote activo. Desarrolla pasatiempos e involúcrate en nuevas actividades." },
+            { title: "Control y Conducta", icon: 'shield-check', html: "<b>Cuida tu salud.</b> No desatiendas tu cuerpo ni tu mente. Acude a controles de salud y vive tu sexualidad de forma segura y responsable." },
+            { title: "Otras Conductas", icon: 'car', html: "<b>Sé prudente.</b> Usa siempre el cinturón de seguridad y respeta las normas del tránsito. ¡Tu vida es lo más importante!" }
+        ];
+
+        const startScreen = document.getElementById('start-screen');
+        const quizScreen = document.getElementById('quiz-screen');
+        const feedbackScreen = document.getElementById('feedback-screen');
+        const resultsScreen = document.getElementById('results-screen');
+        const finalScreen = document.getElementById('final-screen');
+        
+        const startBtn = document.getElementById('start-btn');
+        const feedbackBtn = document.getElementById('feedback-btn');
+        const feedbackForm = document.getElementById('feedback-form');
+        const submitFeedbackBtn = document.getElementById('submit-feedback-btn');
+
+        const fantasticoLetters = document.querySelectorAll('.fantastico-letter');
+        const questionCategoryEl = document.getElementById('question-category');
+        const questionTextEl = document.getElementById('question-text');
+        const optionsContainer = document.getElementById('options-container');
+        const questionCounterEl = document.getElementById('question-counter');
+        const resultContentEl = document.getElementById('result-content');
+
+        let currentQuiz = 0;
+        let score = 0;
+        let selectionMade = false;
+
+        startBtn.addEventListener('click', () => {
+            startScreen.classList.add('hidden');
+            quizScreen.classList.remove('hidden');
+            loadQuiz();
+        });
+
+        function loadQuiz() {
+            selectionMade = false;
+            const currentQuizData = quizData[currentQuiz];
+            const currentCategory = categoryMap[currentQuiz];
+            
+            fantasticoLetters.forEach((letter, index) => {
+                letter.classList.toggle('active', index === currentCategory.letterIndex);
+            });
+            questionCategoryEl.innerText = currentCategory.name;
+            
+            questionTextEl.innerText = currentQuizData.question;
+            optionsContainer.innerHTML = '';
+
+            currentQuizData.options.forEach((option) => {
+                const optionElement = document.createElement('div');
+                optionElement.classList.add('question-option', 'p-4', 'rounded-xl', 'cursor-pointer', 'font-medium');
+                optionElement.innerHTML = `<p>${option.text}</p>`;
+                optionElement.addEventListener('click', () => selectOption(optionElement, option.points));
+                optionsContainer.appendChild(optionElement);
+            });
+            
+            questionCounterEl.innerText = `Pregunta ${currentQuiz + 1} de ${quizData.length}`;
+        }
+        
+        function selectOption(element, points) {
+            if (selectionMade) return;
+            selectionMade = true;
+
+            element.classList.add('selected');
+            score += points;
+
+            setTimeout(() => {
+                const previousCategoryIndex = categoryMap[currentQuiz].letterIndex;
+                currentQuiz++;
+
+                if (currentQuiz < quizData.length) {
+                    const currentCategoryIndex = categoryMap[currentQuiz].letterIndex;
+                    if (currentCategoryIndex !== previousCategoryIndex) {
+                        showRecommendationModal(previousCategoryIndex, false);
+                    } else {
+                        loadQuiz();
+                    }
+                } else {
+                    showRecommendationModal(previousCategoryIndex, true);
+                }
+            }, 400);
+        }
+        
+        function showRecommendationModal(categoryIndex, isFinal) {
+            const recommendation = recommendations[categoryIndex];
+            const iconHtml = `<div class="mb-4 flex justify-center items-center w-20 h-20 mx-auto bg-green-100 rounded-full text-green-600"><i data-lucide="${recommendation.icon}" class="w-10 h-10"></i></div>`;
+
+            Swal.fire({
+                title: `<h2 class="text-2xl font-bold text-gray-800">${recommendation.title}</h2>`,
+                html: `${iconHtml}<p class="text-gray-600 text-lg px-4">${recommendation.html}</p>`,
+                confirmButtonText: '<b>¡CONTINUAR!</b>',
+                confirmButtonColor: '#059669',
+                customClass: {
+                    popup: 'rounded-2xl shadow-lg',
+                    title: 'pt-4',
+                },
+                showClass: {
+                    popup: 'animate__animated animate__fadeInDown'
+                },
+                hideClass: {
+                    popup: 'animate__animated animate__fadeOutUp'
+                },
+                didOpen: () => {
+                    lucide.createIcons();
+                }
+            }).then(() => {
+                if (isFinal) {
+                    quizScreen.classList.add('hidden');
+                    resultsScreen.classList.remove('hidden');
+                    showResults();
+                } else {
+                    loadQuiz();
+                }
+            });
+        }
+
+        feedbackBtn.addEventListener('click', () => {
+            resultsScreen.classList.add('hidden');
+            feedbackScreen.classList.remove('hidden');
+        });
+
+        feedbackForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            document.getElementById('feedback-message').classList.remove('hidden');
+            submitFeedbackBtn.disabled = true;
+            submitFeedbackBtn.classList.add('opacity-50');
+
+            setTimeout(() => {
+                feedbackScreen.classList.add('hidden');
+                finalScreen.classList.remove('hidden');
+            }, 1000); 
+        });
+
+        function showResults() {
+            let resultHTML = '';
+            const finalScore = score * 2;
+
+            const scoreDisplay = `<div class="mb-6"><span class="text-lg font-medium text-gray-500">Tu puntaje:</span><p class="text-6xl font-black brand-gradient text-transparent bg-clip-text">${finalScore}</p></div>`;
+
+            if (finalScore >= 108) {
+                 resultHTML = `${scoreDisplay}<i data-lucide="party-popper" class="w-20 h-20 text-green-500 mx-auto"></i><h2 class="text-3xl font-bold mt-4">¡Felicitaciones! Tienes un estilo de vida FANTÁSTICO.</h2><p class="text-gray-600 mt-2 max-w-lg mx-auto">Sigue así, eres un ejemplo de bienestar y equilibrio. Tu energía positiva inspira a otros.</p>`;
+            } else if (finalScore >= 85) {
+                resultHTML = `${scoreDisplay}<i data-lucide="thumbs-up" class="w-20 h-20 text-blue-500 mx-auto"></i><h2 class="text-3xl font-bold mt-4">¡Buen trabajo! Estás en el camino correcto.</h2><p class="text-gray-600 mt-2 max-w-lg mx-auto">Tus hábitos son muy saludables. Sigue cuidándote y puliendo esas pequeñas áreas para sentirte aún mejor.</p>`;
+            } else if (finalScore >= 73) {
+                 resultHTML = `${scoreDisplay}<i data-lucide="check-circle" class="w-20 h-20 text-teal-500 mx-auto"></i><h2 class="text-3xl font-bold mt-4">Adecuado, estás bien.</h2><p class="text-gray-600 mt-2 max-w-lg mx-auto">Tienes una buena base, pero hay espacio para mejorar. ¡Pequeños cambios pueden hacer una gran diferencia en tu bienestar!</p>`;
+            } else if (finalScore >= 47) {
+                resultHTML = `${scoreDisplay}<i data-lucide="alert-triangle" class="w-20 h-20 text-yellow-500 mx-auto"></i><h2 class="text-3xl font-bold mt-4">Algo bajo, podrías mejorar.</h2><p class="text-gray-600 mt-2 max-w-lg mx-auto">Es un buen momento para reflexionar sobre tus hábitos. Identifica un área en la que quieras empezar a trabajar. ¡Cada paso cuenta!</p>`;
+            } else {
+                 resultHTML = `${scoreDisplay}<i data-lucide="shield-alert" class="w-20 h-20 text-red-500 mx-auto"></i><h2 class="text-3xl font-bold mt-4">Estás en la zona de peligro.</h2><p class="text-gray-600 mt-2 max-w-lg mx-auto">Ser honesto contigo mismo es el primer y más valiente paso. Nunca es tarde para cambiar. Empieza hoy mismo a construir un futuro más saludable.</p>`;
+            }
+             resultContentEl.innerHTML = resultHTML;
+             lucide.createIcons();
+        }
+
+    </script>
 </body>
 </html>
+
+
+
+
+
