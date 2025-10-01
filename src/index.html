@@ -218,14 +218,21 @@
         const recommendations = [
             { title: "Familia y Amigos", icon: 'heart', html: "<b>Comunícate.</b> Comparte tus sentimientos con los demás. Abraza a alguien que tú quieras todos los días." },
             { title: "Actividad Física", icon: 'activity', html: "<b>Intégrate y haz ejercicio.</b> Participa en grupos y realiza al menos 30 minutos de actividad física al día. ¡Baila, camina, trota, muévete!" },
-            { title: "Nutrición", icon: 'smile', html: "<b>Come bien.</b> Incluye frutas y verduras en tus comidas. Evita la sal, el azúcar, la comida chatarra y reduce las grasas." },
+            { title: "Nutrición", icon: 'smile', html: "<b>Come bien.</b> Incluye frutas y verduras en tus comidas. Reduce la sal, el azúcar, la comida chatarra y reduce las grasas." },
             { title: "Tabaco", icon: 'wind', html: "<b>Vive libre de humo.</b> Deja de fumar, o mejor aún, no comiences. Busca ayuda y prefiere siempre ambientes sin tabaco." },
-            { title: "Alcohol y Drogas", icon: 'alert-triangle', html: "<b>Consume con responsabilidad.</b> Si vas a beber, no te embriagues y nunca conduzcas después de hacerlo. Evita las drogas." },
+            { title: "Alcohol y Drogas", icon: 'alert-triangle', html: "<b>Consume con responsabilidad.</b> Si vas a beber, no te embriagues y nunca conduzcas después de hacerlo. Reduce las sustancias psicoactivas." },
             { title: "Sueño y Estrés", icon: 'moon', html: "<b>Descansa y relájate.</b> Trata de dormir de 7 a 9 horas cada noche. Libérate del estrés con técnicas de respiración y ejercicio." },
             { title: "Tipo de Personalidad", icon: 'coffee', html: "<b>Tranquilízate.</b> Busca maneras de relajarte, conversa con otras personas y disfruta de la vida con calma." },
             { title: "Introspección", icon: 'sun', html: "<b>Piensa en positivo.</b> Aleja la depresión manteniéndote activo. Desarrolla pasatiempos e involúcrate en nuevas actividades." },
             { title: "Control y Conducta", icon: 'shield-check', html: "<b>Cuida tu salud.</b> No desatiendas tu cuerpo ni tu mente. Acude a controles de salud y vive tu sexualidad de forma segura y responsable." },
             { title: "Otras Conductas", icon: 'car', html: "<b>Sé prudente.</b> Usa siempre el cinturón de seguridad y respeta las normas del tránsito. ¡Tu vida es lo más importante!" }
+        ];
+
+        const maxCategoryScores = [4, 6, 6, 4, 12, 8, 4, 6, 6, 4];
+        const categoryNames = [
+            "Familia y Amigos", "Asoc. y Act. Física", "Nutrición", "Tabaco",
+            "Alcohol y Drogas", "Sueño y Estrés", "Personalidad", "Introspección",
+            "Control y Conducta", "Otras Conductas"
         ];
 
         const startScreen = document.getElementById('start-screen');
@@ -248,6 +255,7 @@
 
         let currentQuiz = 0;
         let score = 0;
+        let categoryScores = new Array(10).fill(0);
         let selectionMade = false;
 
         startBtn.addEventListener('click', () => {
@@ -286,6 +294,10 @@
 
             element.classList.add('selected');
             score += points;
+            
+            const categoryIndex = categoryMap[currentQuiz].letterIndex;
+            categoryScores[categoryIndex] += points;
+
 
             setTimeout(() => {
                 const previousCategoryIndex = categoryMap[currentQuiz].letterIndex;
@@ -355,31 +367,83 @@
         });
 
         function showResults() {
+            const letters = ['F', 'A', 'N', 'T', 'Á', 'S', 'T', 'I', 'C', 'O'];
+            let breakdownHTML = `
+                <div class="mb-6 pb-6 border-b-2 border-gray-100">
+                    <h3 class="text-xl font-bold text-gray-800 mb-4">Puntaje por sección</h3>
+                    <div class="grid grid-cols-2 gap-x-8 gap-y-4 max-w-md mx-auto">
+            `;
+            
+            for (let i = 0; i < 5; i++) {
+                const leftIndex = i;
+                const rightIndex = i + 5;
+
+                // Left Item
+                const leftCategoryScore = categoryScores[leftIndex];
+                const leftMaxScore = maxCategoryScores[leftIndex];
+                const leftPercentage = (leftCategoryScore / leftMaxScore) * 100;
+                let leftColorClass = 'text-red-600';
+                if (leftPercentage > 70) leftColorClass = 'text-green-600';
+                else if (leftPercentage >= 35) leftColorClass = 'text-orange-500';
+
+                breakdownHTML += `
+                    <div class="flex items-center gap-4">
+                        <p class="font-black text-4xl brand-gradient text-transparent bg-clip-text">${letters[leftIndex]}</p>
+                        <div class="flex-1 text-left">
+                            <p class="font-bold text-gray-800 leading-tight">${categoryNames[leftIndex]}</p>
+                            <p class="font-semibold text-lg ${leftColorClass}">${leftCategoryScore} / ${leftMaxScore} pts</p>
+                        </div>
+                    </div>`;
+
+                // Right Item
+                const rightCategoryScore = categoryScores[rightIndex];
+                const rightMaxScore = maxCategoryScores[rightIndex];
+                const rightPercentage = (rightCategoryScore / rightMaxScore) * 100;
+                let rightColorClass = 'text-red-600';
+                if (rightPercentage > 70) rightColorClass = 'text-green-600';
+                else if (rightPercentage >= 35) rightColorClass = 'text-orange-500';
+                
+                breakdownHTML += `
+                    <div class="flex items-center gap-4">
+                        <p class="font-black text-4xl brand-gradient text-transparent bg-clip-text">${letters[rightIndex]}</p>
+                        <div class="flex-1 text-left">
+                            <p class="font-bold text-gray-800 leading-tight">${categoryNames[rightIndex]}</p>
+                            <p class="font-semibold text-lg ${rightColorClass}">${rightCategoryScore} / ${rightMaxScore} pts</p>
+                        </div>
+                    </div>`;
+            }
+
+            breakdownHTML += `</div></div>`;
+
             let resultHTML = '';
             const finalScore = score * 2;
+            let scaleHTML = '';
+            let finalMessageHTML = '';
 
-            const scoreDisplay = `<div class="mb-6"><span class="text-lg font-medium text-gray-500">Tu puntaje:</span><p class="text-6xl font-black brand-gradient text-transparent bg-clip-text">${finalScore}</p></div>`;
+            const scoreDisplay = `<div class="mb-4"><span class="text-lg font-medium text-gray-500">Total:</span><p class="text-6xl font-black brand-gradient text-transparent bg-clip-text">${finalScore}</p></div>`;
 
             if (finalScore >= 108) {
-                 resultHTML = `${scoreDisplay}<i data-lucide="party-popper" class="w-20 h-20 text-green-500 mx-auto"></i><h2 class="text-3xl font-bold mt-4">¡Felicitaciones! Tienes un estilo de vida FANTÁSTICO.</h2><p class="text-gray-600 mt-2 max-w-lg mx-auto">Sigue así, eres un ejemplo de bienestar y equilibrio. Tu energía positiva inspira a otros.</p>`;
+                scaleHTML = `<div class="mb-6 px-4 py-2 bg-green-100 text-green-800 font-semibold rounded-full inline-block">Categoría: Fantástico (108-120 pts)</div>`;
+                finalMessageHTML = `<i data-lucide="party-popper" class="w-20 h-20 text-green-500 mx-auto"></i><h2 class="text-3xl font-bold mt-4">¡Felicitaciones! Tienes un estilo de vida FANTÁSTICO.</h2><p class="text-gray-600 mt-2 max-w-lg mx-auto">Sigue así, eres un ejemplo de bienestar y equilibrio. Tu energía positiva inspira a otros.</p>`;
             } else if (finalScore >= 85) {
-                resultHTML = `${scoreDisplay}<i data-lucide="thumbs-up" class="w-20 h-20 text-blue-500 mx-auto"></i><h2 class="text-3xl font-bold mt-4">¡Buen trabajo! Estás en el camino correcto.</h2><p class="text-gray-600 mt-2 max-w-lg mx-auto">Tus hábitos son muy saludables. Sigue cuidándote y puliendo esas pequeñas áreas para sentirte aún mejor.</p>`;
+                scaleHTML = `<div class="mb-6 px-4 py-2 bg-blue-100 text-blue-800 font-semibold rounded-full inline-block">Categoría: Buen trabajo (85-107 pts)</div>`;
+                finalMessageHTML = `<i data-lucide="thumbs-up" class="w-20 h-20 text-blue-500 mx-auto"></i><h2 class="text-3xl font-bold mt-4">¡Buen trabajo! Estás en el camino correcto.</h2><p class="text-gray-600 mt-2 max-w-lg mx-auto">Tus hábitos son muy saludables. Sigue cuidándote y puliendo esas pequeñas áreas para sentirte aún mejor.</p>`;
             } else if (finalScore >= 73) {
-                 resultHTML = `${scoreDisplay}<i data-lucide="check-circle" class="w-20 h-20 text-teal-500 mx-auto"></i><h2 class="text-3xl font-bold mt-4">Adecuado, estás bien.</h2><p class="text-gray-600 mt-2 max-w-lg mx-auto">Tienes una buena base, pero hay espacio para mejorar. ¡Pequeños cambios pueden hacer una gran diferencia en tu bienestar!</p>`;
+                scaleHTML = `<div class="mb-6 px-4 py-2 bg-teal-100 text-teal-800 font-semibold rounded-full inline-block">Categoría: Adecuado (73-84 pts)</div>`;
+                finalMessageHTML = `<i data-lucide="check-circle" class="w-20 h-20 text-teal-500 mx-auto"></i><h2 class="text-3xl font-bold mt-4">Adecuado, estás bien.</h2><p class="text-gray-600 mt-2 max-w-lg mx-auto">Tienes una buena base, pero hay espacio para mejorar. ¡Pequeños cambios pueden hacer una gran diferencia en tu bienestar!</p>`;
             } else if (finalScore >= 47) {
-                resultHTML = `${scoreDisplay}<i data-lucide="alert-triangle" class="w-20 h-20 text-yellow-500 mx-auto"></i><h2 class="text-3xl font-bold mt-4">Algo bajo, podrías mejorar.</h2><p class="text-gray-600 mt-2 max-w-lg mx-auto">Es un buen momento para reflexionar sobre tus hábitos. Identifica un área en la que quieras empezar a trabajar. ¡Cada paso cuenta!</p>`;
+                scaleHTML = `<div class="mb-6 px-4 py-2 bg-yellow-100 text-yellow-800 font-semibold rounded-full inline-block">Categoría: Algo bajo (47-72 pts)</div>`;
+                finalMessageHTML = `<i data-lucide="alert-triangle" class="w-20 h-20 text-yellow-500 mx-auto"></i><h2 class="text-3xl font-bold mt-4">Algo bajo, podrías mejorar.</h2><p class="text-gray-600 mt-2 max-w-lg mx-auto">Es un buen momento para reflexionar sobre tus hábitos. Identifica un área en la que quieras empezar a trabajar. ¡Cada paso cuenta!</p>`;
             } else {
-                 resultHTML = `${scoreDisplay}<i data-lucide="shield-alert" class="w-20 h-20 text-red-500 mx-auto"></i><h2 class="text-3xl font-bold mt-4">Estás en la zona de peligro.</h2><p class="text-gray-600 mt-2 max-w-lg mx-auto">Ser honesto contigo mismo es el primer y más valiente paso. Nunca es tarde para cambiar. Empieza hoy mismo a construir un futuro más saludable.</p>`;
+                scaleHTML = `<div class="mb-6 px-4 py-2 bg-red-100 text-red-800 font-semibold rounded-full inline-block">Categoría: Zona de peligro (0-46 pts)</div>`;
+                finalMessageHTML = `<i data-lucide="shield-alert" class="w-20 h-20 text-red-500 mx-auto"></i><h2 class="text-3xl font-bold mt-4">Estás en la zona de peligro.</h2><p class="text-gray-600 mt-2 max-w-lg mx-auto">Ser honesto contigo mismo es el primer y más valiente paso. Nunca es tarde para cambiar. Empieza hoy mismo a construir un futuro más saludable.</p>`;
             }
-             resultContentEl.innerHTML = resultHTML;
+
+             resultContentEl.innerHTML = breakdownHTML + scoreDisplay + scaleHTML + finalMessageHTML;
              lucide.createIcons();
         }
 
     </script>
 </body>
 </html>
-
-
-
-
 
