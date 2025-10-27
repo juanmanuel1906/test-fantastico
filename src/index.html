@@ -118,36 +118,13 @@
                     <!-- Result content will be injected here -->
                 </div>
                 <div class="mt-8 pt-8 border-t-2 border-gray-100">
-                     <button id="feedback-btn" class="btn-primary">¡Quiero dar mi opinión!</button>
+                    <a href="https://docs.google.com/forms/d/e/1FAIpQLSd86l154kMaz8oD1tOYtdYF4BJ9X_u2lLA3UYa1KFTFESmTTA/formResponse"
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        class="btn-primary">
+                        ¡Quiero dar mi opinión!
+                    </a>
                 </div>
-            </section>
-
-
-            <!-- Feedback Screen -->
-            <section id="feedback-screen" class="card p-8 md:p-12 hidden fade-in">
-                <div class="text-center mb-8">
-                    <i data-lucide="message-square-heart" class="w-16 h-16 text-green-500 mx-auto"></i>
-                    <h2 class="text-3xl font-bold mt-4">¡Tu opinión es clave!</h2>
-                    <p class="text-gray-600 mt-2">Ayúdanos a dar forma a este nuevo espacio. Responde con lo primero que se te venga a la mente.</p>
-                </div>
-                <form id="feedback-form" class="space-y-6">
-                    <div>
-                        <label for="q1" class="block font-semibold mb-2">Cuando te hablan de una plataforma juvenil para Armenia, ¿en qué piensas?</label>
-                        <input type="text" id="q1" name="q1" class="w-full p-3 rounded-xl border-2 border-gray-200 focus:border-green-500 focus:ring-0 transition" placeholder="Ej: Eventos, empleos, arte, amigos...">
-                    </div>
-                    <div>
-                        <label for="q2" class="block font-semibold mb-2">¿Qué herramienta o sección no podría faltar en este nuevo espacio digital?</label>
-                        <input type="text" id="q2" name="q2" class="w-full p-3 rounded-xl border-2 border-gray-200 focus:border-green-500 focus:ring-0 transition" placeholder="Ej: Un mapa de parches, un calendario cultural...">
-                    </div>
-                    <div>
-                        <label for="q3" class="block font-semibold mb-2">Si pudieras pedir un deseo para la juventud de Armenia, ¿cuál sería?</label>
-                        <textarea id="q3" name="q3" rows="3" class="w-full p-3 rounded-xl border-2 border-gray-200 focus:border-green-500 focus:ring-0 transition" placeholder="Ej: Más oportunidades para mostrar nuestro talento..."></textarea>
-                    </div>
-                    <div class="text-center pt-4">
-                        <button type="submit" id="submit-feedback-btn" class="btn-primary">Enviar y finalizar</button>
-                    </div>
-                </form>
-                 <p id="feedback-message" class="text-center mt-4 text-green-600 font-semibold hidden">¡Gracias por tus ideas!</p>
             </section>
             
             <!-- Final Screen -->
@@ -242,9 +219,7 @@
         const finalScreen = document.getElementById('final-screen');
         
         const startBtn = document.getElementById('start-btn');
-        const feedbackBtn = document.getElementById('feedback-btn');
         const feedbackForm = document.getElementById('feedback-form');
-        const submitFeedbackBtn = document.getElementById('submit-feedback-btn');
 
         const fantasticoLetters = document.querySelectorAll('.fantastico-letter');
         const questionCategoryEl = document.getElementById('question-category');
